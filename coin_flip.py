@@ -28,6 +28,9 @@ class CoinFlipGame(QWidget):
         self.winner_label = QLabel(self)
         self.winner_label.setAlignment(Qt.AlignCenter)
         self.winner_label.setWordWrap(True)
+        self.tie_label = QLabel(self)
+        self.tie_label.setAlignment(Qt.AlignCenter)
+        self.tie_label.setWordWrap(True)
 
         # Create layouts
         button_hbox = QHBoxLayout()
@@ -41,6 +44,7 @@ class CoinFlipGame(QWidget):
         vbox.addWidget(self.result_label)
         vbox.addLayout(hbox)
         vbox.addWidget(self.winner_label)
+        vbox.addWidget(self.tie_label)
 
         # Set main layout
         self.setLayout(vbox)
@@ -54,7 +58,11 @@ class CoinFlipGame(QWidget):
         self.result_label.setText(f"A coin was flipped {num_flips} times.")
         self.num_heads_label.setText(f"Number of heads: {heads}")
         self.num_tails_label.setText(f"Number of tails: {tails}")
-        self.winner_label.setText(f"Winner: {self.display_winner(heads, tails)}")
+        winner = self.display_winner(heads, tails)
+        if winner:
+            self.winner_label.setText(f"Winner: {winner}")
+        else:
+            self.winner_label.setText(self.tie_label.setText(self.display_tie(heads, tails)))
 
     def random_coin_flip(self, num_flips: int) -> Tuple[int, int]:
         coin_flip = numpy.random.binomial(n=1, p=0.5, size=num_flips)
@@ -63,7 +71,14 @@ class CoinFlipGame(QWidget):
         return heads, tails
 
     def display_winner(self, heads: int, tails: int) -> str:
+        if heads == tails:
+            return ""
         return "Heads" if heads > tails else "Tails"
+
+    def display_tie(self, heads: int, tails: int) -> str:
+        if heads == tails:
+            return "It's a Tie!"
+        return ""
     
     def show_about_message(self):
         QMessageBox.about(self, "About Coin Flip", f"Author: {__author__}\nVersion: {__version__}\nGithub: {__github__}")
